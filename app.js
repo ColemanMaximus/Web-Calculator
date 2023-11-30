@@ -1,8 +1,8 @@
 const calculatorContainer = document.querySelector(".calculator");
 const screen = calculatorContainer.querySelector(".screen");
 
+let buffer = "0";
 let savedNumber;
-let numberHistory = [];
 let usedOperator;
 
 calculatorContainer.addEventListener("click", (e) => {
@@ -13,24 +13,24 @@ calculatorContainer.addEventListener("click", (e) => {
   }
 
   if (isOperator(target)) {
-    const operator = target.textContent;
+    let operator = target.textContent;
 
-    if (operator == "C") {
-      clearScreen();
-      return;
+    switch (operator) {
+      case "C":
+        clearScreen();
+        break;
+      case "=":
+        calculate(savedNumber, buffer);
+        break;
+      case "←":
+        buffer = buffer.substring(0, buffer.length - 1);
+        updateScreen();
+        break;
+      default:
+        usedOperator = operator;
+        saveOperation();
+        break;
     }
-    if (operator == "=" && usedOperator) {
-      calculate(savedNumber, numberHistory[0], usedOperator);
-      return;
-    }
-
-    if (operator == "←") {
-      numberHistory.shift();
-      updateScreen(numberHistory[0]);
-      return;
-    }
-
-    saveOperation(numberHistory[0], operator);
     return;
   }
 
@@ -42,29 +42,31 @@ function isOperator(target) {
   return target.classList.contains("op");
 }
 
-function saveOperation(value, operator) {
-  savedNumber = value;
-  usedOperator = operator;
-  numberHistory = [];
-  updateScreen(0);
+function saveOperation() {
+  savedNumber = buffer;
+  clearBuffer();
+  updateScreen();
 }
 
 function appendNumber(value) {
-  if (numberHistory.length == 0) {
-    updateScreen(value)
-    numberHistory.push(value);
+  if (buffer === "0" && value === "0") return;
+  if (buffer === "0") {
+    buffer = value;
+    updateScreen();
     return;
   }
 
-  let prenumber = numberHistory[0];
-  const combined = prenumber += value;
-  numberHistory.unshift(combined);
-  updateScreen(combined);
+  buffer += value;
+  updateScreen();
 }
 
 function clearScreen() {
-  screen.textContent = 0;
-  numberHistory = [];
+  clearBuffer();
+  updateScreen();
+}
+
+function clearBuffer() {
+  buffer = "0";
 }
 
 function addNumber(value1, value2) {
@@ -80,32 +82,35 @@ function multiply(value1, value2) {
 }
 
 function divide(value1, value2) {
-  return parseFloat(value1) / parseFloat(value2);
+  return parseInt(value1) / parseInt(value2);
 }
 
-function updateScreen(value) {
-  if (value == undefined) {
-    value = 0;
-  }
-
-  screen.textContent = value;
+function updateScreen() {
+  console.log(buffer)
+  screen.textContent = buffer;
+  console.log(buffer)
 }
 
-function calculate(value1, value2, operator) {
+function calculate(value1, value2) {
   let sum;
 
-  if (!operator) return;
-  if (operator == "+") {
-    sum = addNumber(value1, value2);
-  } else if (operator == "-") {
-    sum = minusNumber(value1, value2);
-  } else if (operator == "×") {
-    sum = multiply(value1, value2);  
-  } else {
-    sum = divide(value1, value2);
+  if (!usedOperator) return;
+  switch (usedOperator) {
+    case "+":
+      sum = addNumber(value1, value2);
+      break;
+    case "-":
+      sum = minusNumber(value1, value2);
+      break;
+    case "×":
+      sum = multiply(value1, value2);
+      break;
+    case "÷":
+      sum = divide(value1, value2);
+      break;
   }
 
   usedOperator = undefined;
-  numberHistory = [];
-  updateScreen(sum);
+  buffer = sum.toString();
+  updateScreen();
 }
