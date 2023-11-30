@@ -86,3 +86,15 @@
 .round-br {
   border-bottom-right-radius: 15px;
 }
+
+@media screen and (max-width: 900px) {
+  .btn {
+    width: 70px;
+    height: 70px;
+  }
+
+  .screen {
+    height: 70px;
+    font-size: 36px;
+  }
+}
