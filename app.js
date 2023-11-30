@@ -106,5 +106,6 @@ function calculate(value1, value2, operator) {
   }
 
   usedOperator = undefined;
+  numberHistory = [];
   updateScreen(sum);
 }
