@@ -24,6 +24,7 @@ calculatorContainer.addEventListener("click", (e) => {
         break;
       case "←":
         buffer = buffer.substring(0, buffer.length - 1);
+        if (!buffer) clearBuffer();
         updateScreen();
         break;
       default:
@@ -86,9 +87,7 @@ function divide(value1, value2) {
 }
 
 function updateScreen() {
-  console.log(buffer)
   screen.textContent = buffer;
-  console.log(buffer)
 }
 
 function calculate(value1, value2) {
